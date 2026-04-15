@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LiveOak Fiber Footprint Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Daily market watch</p>
+          <h1 id="tracker-name">LiveOak Fiber Footprint Tracker</h1>
+          <p id="tracker-tagline" class="tagline"></p>
+          <div class="meta-row">
+            <div class="meta-pill">
+              <span class="meta-label">Last snapshot</span>
+              <strong id="generated-date">Loading...</strong>
+            </div>
+            <div class="meta-pill">
+              <span class="meta-label">Sample addresses</span>
+              <strong id="summary-addresses">0</strong>
+            </div>
+            <div class="meta-pill">
+              <span class="meta-label">States</span>
+              <strong id="summary-states">0</strong>
+            </div>
+          </div>
+        </div>
+        <div class="hero-panel">
+          <p class="panel-kicker">What this is doing today</p>
+          <ul class="panel-list">
+            <li>Tracks five sample addresses in LiveOak markets across Georgia and Florida.</li>
+            <li>Refreshes public plan pages daily and preserves the last known good snapshot.</li>
+            <li>Flags where exact-address FCC or checkout automation is still blocked.</li>
+          </ul>
+        </div>
+      </header>
+
+      <section class="blocker-strip">
+        <h2>Verification status</h2>
+        <div id="blocker-grid" class="blocker-grid"></div>
+      </section>
+
+      <section class="controls">
+        <div class="controls-copy">
+          <h2>Sample addresses</h2>
+          <p>
+            These are public-listing sample addresses in LiveOak service markets. Provider rows are
+            clearly labeled when they are still waiting on exact FCC confirmation.
+          </p>
+        </div>
+        <div class="state-filter" id="state-filter"></div>
+      </section>
+
+      <main id="address-grid" class="address-grid"></main>
+    </div>
+
+    <template id="blocker-template">
+      <article class="blocker-card">
+        <div class="status-dot"></div>
+        <div>
+          <h3></h3>
+          <p></p>
+        </div>
+      </article>
+    </template>
+
+    <template id="address-template">
+      <article class="address-card">
+        <div class="address-head">
+          <div>
+            <p class="address-region"></p>
+            <h3 class="address-title"></h3>
+            <p class="address-subtitle"></p>
+          </div>
+          <span class="status-badge"></span>
+        </div>
+
+        <div class="market-source">
+          <span>LiveOak market source</span>
+          <a target="_blank" rel="noreferrer">Open source</a>
+        </div>
+
+        <p class="address-note"></p>
+
+        <div class="provider-list"></div>
+      </article>
+    </template>
+
+    <template id="provider-template">
+      <section class="provider-card">
+        <div class="provider-head">
+          <div>
+            <h4 class="provider-name"></h4>
+            <p class="provider-meta"></p>
+          </div>
+          <span class="refresh-pill"></span>
+        </div>
+        <p class="provider-availability"></p>
+        <ul class="offer-list"></ul>
+        <p class="provider-source"></p>
+        <p class="provider-note"></p>
+      </section>
+    </template>
+
+    <script src="./app.js" type="module"></script>
+  </body>
+</html>
