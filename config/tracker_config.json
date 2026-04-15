@@ -1,0 +1,189 @@
+{
+  "trackerName": "LiveOak Fiber Footprint Tracker",
+  "tagline": "Daily public-price snapshots for five sample addresses in LiveOak markets, with FCC exact-address verification wired as the next upgrade.",
+  "dataConfidenceLegend": {
+    "verified_public_page": "Pulled from a public pricing or coverage page.",
+    "provisional_market_level": "Inferred from city or market coverage, not yet confirmed on the exact FCC address record.",
+    "blocked_exact_address": "Needs an authenticated FCC lookup or a provider checkout flow that will allow automation."
+  },
+  "globalBlockers": [
+    {
+      "id": "fcc_exact_address",
+      "title": "FCC exact-address provider lookups are not automated yet",
+      "status": "blocked",
+      "detail": "The FCC Broadband Map APIs that expose structured provider data require authentication, and the public site does not expose a clean anonymous endpoint from this environment."
+    },
+    {
+      "id": "provider_checkout",
+      "title": "Some provider checkout flows are protected",
+      "status": "blocked",
+      "detail": "LiveOak's order page is behind Cloudflare in this environment, so exact address pricing needs browser automation in GitHub Actions or a manual session."
+    }
+  ],
+  "addresses": [
+    {
+      "id": "ga-brunswick-timber-ridge",
+      "street": "113 Timber Ridge Dr",
+      "city": "Brunswick",
+      "state": "GA",
+      "zip": "31525",
+      "region": "Georgia",
+      "sampleAddressSource": "Public listing search result",
+      "footprintStatus": "provisional_market_level",
+      "footprintNote": "Chosen as a sample address inside a LiveOak service city. Exact address verification on the FCC record is still pending.",
+      "liveoakMarketSource": {
+        "label": "LiveOak Fiber Brunswick market page",
+        "url": "https://liveoakfiber.com/brunswick-ga-internet-provider/"
+      },
+      "providers": ["liveoak", "xfinity", "tmobile-home", "starlink"]
+    },
+    {
+      "id": "ga-savannah-bacon-park",
+      "street": "1211 Bacon Park Dr",
+      "city": "Savannah",
+      "state": "GA",
+      "zip": "31406",
+      "region": "Georgia",
+      "sampleAddressSource": "Public listing search result",
+      "footprintStatus": "provisional_market_level",
+      "footprintNote": "Chosen as a sample address in Bacon Park, which LiveOak publicly identified as part of its Savannah expansion area.",
+      "liveoakMarketSource": {
+        "label": "Savannah expansion news",
+        "url": "https://liveoakfiber.com/liveoak-fiber-expands-high-speed-fiber-network-in-savannah-georgia/"
+      },
+      "providers": ["liveoak", "xfinity", "tmobile-home", "starlink"]
+    },
+    {
+      "id": "ga-stsimons-shore-edge",
+      "street": "601 Shore Edge Trce",
+      "city": "St. Simons Island",
+      "state": "GA",
+      "zip": "31522",
+      "region": "Georgia",
+      "sampleAddressSource": "Public listing search result",
+      "footprintStatus": "provisional_market_level",
+      "footprintNote": "Chosen as a sample address inside the Golden Isles market LiveOak publicly serves. Exact FCC-location confirmation is still pending.",
+      "liveoakMarketSource": {
+        "label": "LiveOak Fiber St. Simons Island page",
+        "url": "https://liveoakfiber.com/st-simons-island-ga-internet-provider/"
+      },
+      "providers": ["liveoak", "xfinity", "tmobile-home", "starlink"]
+    },
+    {
+      "id": "fl-niceville-crestone",
+      "street": "1706 Crestone Cv",
+      "city": "Niceville",
+      "state": "FL",
+      "zip": "32578",
+      "region": "Florida",
+      "sampleAddressSource": "Public listing search result",
+      "footprintStatus": "provisional_market_level",
+      "footprintNote": "Chosen as a sample address in a LiveOak Emerald Coast city. Exact FCC-location confirmation is still pending.",
+      "liveoakMarketSource": {
+        "label": "LiveOak Fiber Niceville page",
+        "url": "https://liveoakfiber.com/niceville-fl-internet-provider/"
+      },
+      "providers": ["liveoak", "cox", "tmobile-home", "starlink"]
+    },
+    {
+      "id": "fl-fortwalton-cambridge",
+      "street": "613 Cambridge Ave",
+      "city": "Fort Walton Beach",
+      "state": "FL",
+      "zip": "32547",
+      "region": "Florida",
+      "sampleAddressSource": "Public listing search result",
+      "footprintStatus": "provisional_market_level",
+      "footprintNote": "Chosen as a sample address inside another LiveOak Emerald Coast city. Exact FCC-location confirmation is still pending.",
+      "liveoakMarketSource": {
+        "label": "LiveOak Fiber Fort Walton Beach page",
+        "url": "https://liveoakfiber.com/fort-walton-beach-fl-internet-provider/"
+      },
+      "providers": ["liveoak", "cox", "tmobile-home", "starlink"]
+    }
+  ],
+  "providers": {
+    "liveoak": {
+      "name": "LiveOak Fiber",
+      "technology": "FTTH",
+      "confidence": "verified_public_page",
+      "priceUrl": "https://liveoakfiber.com/residential-offer/",
+      "priceSourceLabel": "LiveOak public residential offer page",
+      "notes": [
+        "LiveOak publishes pricing publicly, but exact address availability still needs the FCC location lookup or the order flow.",
+        "Some market landing pages advertise different tier mixes, so exact address results matter."
+      ],
+      "fallbackOffers": [
+        {"tier": "500 Mbps", "price": "$59/mo"},
+        {"tier": "1 Gbps", "price": "$89/mo"},
+        {"tier": "3 Gbps", "price": "$109/mo"},
+        {"tier": "5 Gbps", "price": "$139/mo"}
+      ]
+    },
+    "xfinity": {
+      "name": "Xfinity",
+      "technology": "Cable",
+      "confidence": "verified_public_page",
+      "priceUrl": "https://www.xfinity.com/learn/internet-service",
+      "priceSourceLabel": "Xfinity public internet plans page",
+      "notes": [
+        "Seeded from Xfinity's published online pricing, not an exact-address cart result.",
+        "Georgia sample addresses use Xfinity as the provisional cable competitor until FCC exact-address records are connected."
+      ],
+      "fallbackOffers": [
+        {"tier": "300 Mbps", "price": "$45/mo"},
+        {"tier": "500 Mbps", "price": "$60/mo"},
+        {"tier": "1 Gig", "price": "$70/mo"},
+        {"tier": "2 Gbps", "price": "$100/mo"}
+      ]
+    },
+    "cox": {
+      "name": "Cox",
+      "technology": "Cable",
+      "confidence": "verified_public_page",
+      "priceUrl": "https://www.cox.com/residential-shop/internet-configuration.html",
+      "priceSourceLabel": "Cox public internet configuration page",
+      "notes": [
+        "Seeded from published plan pricing, not an exact-address checkout result.",
+        "Florida sample addresses use Cox as the provisional cable competitor until FCC exact-address records are connected."
+      ],
+      "fallbackOffers": [
+        {"tier": "300 Mbps", "price": "$55/mo"},
+        {"tier": "500 Mbps", "price": "$75/mo"},
+        {"tier": "1 GIG", "price": "$90/mo"},
+        {"tier": "2 GIG", "price": "$110/mo"}
+      ]
+    },
+    "tmobile-home": {
+      "name": "T-Mobile Home Internet",
+      "technology": "FWA",
+      "confidence": "verified_public_page",
+      "priceUrl": "https://www.t-mobile.com/home-internet/plans",
+      "priceSourceLabel": "T-Mobile Home Internet plans page",
+      "notes": [
+        "T-Mobile publishes plan pricing publicly, but availability and speeds can vary by exact address.",
+        "The address-level offer needs a live availability check to move from provisional to exact."
+      ],
+      "fallbackOffers": [
+        {"tier": "Rely", "price": "$50/mo"},
+        {"tier": "Amplified", "price": "$60/mo"},
+        {"tier": "All-In", "price": "$70/mo"}
+      ]
+    },
+    "starlink": {
+      "name": "Starlink",
+      "technology": "Satellite",
+      "confidence": "verified_public_page",
+      "priceUrl": "https://www.starlink.com/residential",
+      "priceSourceLabel": "Starlink Residential page",
+      "notes": [
+        "Only Starlink is tracked on the satellite side, per scope.",
+        "Starlink runs address-sensitive promos in some areas, so the exact address result may differ from the public baseline."
+      ],
+      "fallbackOffers": [
+        {"tier": "Residential Lite", "price": "$80/mo"},
+        {"tier": "Residential", "price": "$120/mo"}
+      ]
+    }
+  }
+}
