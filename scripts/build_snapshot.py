@@ -2,180 +2,173 @@
 
 from __future__ import annotations
 
+import csv
 import json
-import re
+from collections import Counter
 from datetime import datetime, timezone
+from io import StringIO
 from pathlib import Path
-from urllib.error import HTTPError, URLError
-from urllib.request import Request, urlopen
 
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG_PATH = ROOT / "config" / "tracker_config.json"
-OUTPUT_PATH = ROOT / "site" / "data" / "latest.json"
-
-USER_AGENT = "Mozilla/5.0 (compatible; LiveOakFiberTracker/0.1; +https://github.com/)"
-
-
-FETCH_RULES = {
-    "liveoak": {
-        "patterns": [
-            (r"500\s*(?:Mbps|MBPS).*?\$59", "500 Mbps", "$59/mo"),
-            (r"1\s*(?:G(?:bps|BPS)|Gig).*?\$89", "1 Gbps", "$89/mo"),
-            (r"3\s*(?:G(?:bps|BPS)|Gig).*?\$109", "3 Gbps", "$109/mo"),
-            (r"5\s*(?:G(?:bps|BPS)|Gig).*?\$139", "5 Gbps", "$139/mo"),
-        ],
-    },
-    "xfinity": {
-        "patterns": [
-            (r"300\s*Mbps.*?\$45", "300 Mbps", "$45/mo"),
-            (r"500\s*Mbps.*?\$60", "500 Mbps", "$60/mo"),
-            (r"1\s*Gig.*?\$70", "1 Gig", "$70/mo"),
-            (r"2\s*G(?:bps|BPS).*?\$100", "2 Gbps", "$100/mo"),
-        ],
-    },
-    "cox": {
-        "patterns": [
-            (r"300\s*Mbps.*?\$55", "300 Mbps", "$55/mo"),
-            (r"500\s*Mbps.*?\$75", "500 Mbps", "$75/mo"),
-            (r"1\s*GIG.*?\$90", "1 GIG", "$90/mo"),
-            (r"2\s*GIG.*?\$110", "2 GIG", "$110/mo"),
-        ],
-    },
-    "tmobile-home": {
-        "patterns": [
-            (r"Rely.*?\$50", "Rely", "$50/mo"),
-            (r"Amplified.*?\$60", "Amplified", "$60/mo"),
-            (r"All-In.*?\$70", "All-In", "$70/mo"),
-        ],
-    },
-    "starlink": {
-        "patterns": [
-            (r"Residential Lite.*?\$80", "Residential Lite", "$80/mo"),
-            (r"Residential.*?\$120", "Residential", "$120/mo"),
-        ],
-    },
-}
+DATA_DIR = ROOT / "site" / "data"
+OUTPUT_PATH = DATA_DIR / "latest.json"
+PROVIDERS_CSV_PATH = DATA_DIR / "provider_universe.csv"
+METRICS_CSV_PATH = DATA_DIR / "metric_dictionary.csv"
+SOURCES_CSV_PATH = DATA_DIR / "data_sources.csv"
 
 
 def load_config() -> dict:
     return json.loads(CONFIG_PATH.read_text())
 
 
-def fetch_html(url: str) -> str:
-    request = Request(url, headers={"User-Agent": USER_AGENT})
-    with urlopen(request, timeout=25) as response:
-        return response.read().decode("utf-8", errors="ignore")
+def csv_text(rows: list[dict], fieldnames: list[str]) -> str:
+    buffer = StringIO()
+    writer = csv.DictWriter(buffer, fieldnames=fieldnames)
+    writer.writeheader()
+    writer.writerows(rows)
+    return buffer.getvalue()
 
 
-def find_offers(provider_id: str, html: str) -> list[dict]:
-    offers: list[dict] = []
-    rules = FETCH_RULES.get(provider_id, {})
-    for pattern, tier, price in rules.get("patterns", []):
-        if re.search(pattern, html, flags=re.IGNORECASE | re.DOTALL):
-            offers.append({"tier": tier, "price": price})
-    return offers
+def provider_rows(providers: list[dict]) -> list[dict]:
+    rows: list[dict] = []
+    for provider in providers:
+        rows.append(
+            {
+                "rank": provider["rank"],
+                "name": provider["name"],
+                "segment": provider["segment"],
+                "category": provider["category"],
+                "technologies": ", ".join(provider["technologies"]),
+                "focus": provider["focus"],
+                "notes": provider["notes"],
+            }
+        )
+    return rows
 
 
-def refresh_provider(provider_id: str, provider: dict) -> dict:
-    refreshed = {
-        "providerId": provider_id,
-        "name": provider["name"],
-        "technology": provider["technology"],
-        "confidence": provider["confidence"],
-        "priceUrl": provider["priceUrl"],
-        "priceSourceLabel": provider["priceSourceLabel"],
-        "notes": provider["notes"],
-        "offers": provider["fallbackOffers"],
-        "refreshStatus": "fallback_used",
-        "refreshDetail": "Loaded the seeded public-price snapshot.",
-    }
+def metric_rows(metric_families: list[dict]) -> list[dict]:
+    return [
+        {
+            "metric_family": metric["name"],
+            "description": metric["description"],
+        }
+        for metric in metric_families
+    ]
 
-    try:
-        html = fetch_html(provider["priceUrl"])
-        offers = find_offers(provider_id, html)
-        if offers:
-            refreshed["offers"] = offers
-            refreshed["refreshStatus"] = "live_public_page_match"
-            refreshed["refreshDetail"] = "Matched current pricing from the provider's public page."
-        else:
-            refreshed["refreshDetail"] = "Fetched the public page, but the current parser could not confidently match pricing tiers."
-    except HTTPError as exc:
-        refreshed["refreshDetail"] = f"Provider page returned HTTP {exc.code}; keeping the seeded public-price snapshot."
-    except URLError as exc:
-        refreshed["refreshDetail"] = f"Provider page fetch failed ({exc.reason}); keeping the seeded public-price snapshot."
-    except Exception as exc:
-        refreshed["refreshDetail"] = f"Unexpected refresh error ({exc.__class__.__name__}); keeping the seeded public-price snapshot."
 
-    return refreshed
+def source_rows(data_sources: list[dict]) -> list[dict]:
+    return [
+        {
+            "source": source["name"],
+            "status": source["status"],
+            "detail": source["detail"],
+            "fields": ", ".join(source["fields"]),
+        }
+        for source in data_sources
+    ]
 
 
 def build_snapshot(config: dict) -> dict:
-    provider_catalog = {
-        provider_id: refresh_provider(provider_id, provider)
-        for provider_id, provider in config["providers"].items()
-    }
-
-    addresses = []
-    for address in config["addresses"]:
-        provider_rows = []
-        for provider_id in address["providers"]:
-            provider = provider_catalog[provider_id]
-            provider_rows.append(
-                {
-                    "providerId": provider_id,
-                    "name": provider["name"],
-                    "technology": provider["technology"],
-                    "availabilityStatus": "provisional_market_level",
-                    "availabilityDetail": "Exact-address FCC confirmation is still pending. This row is based on public market coverage and pricing pages.",
-                    "confidence": provider["confidence"],
-                    "refreshStatus": provider["refreshStatus"],
-                    "refreshDetail": provider["refreshDetail"],
-                    "priceSourceLabel": provider["priceSourceLabel"],
-                    "priceUrl": provider["priceUrl"],
-                    "notes": provider["notes"],
-                    "offers": provider["offers"],
-                }
-            )
-
-        addresses.append(
-            {
-                "id": address["id"],
-                "street": address["street"],
-                "city": address["city"],
-                "state": address["state"],
-                "zip": address["zip"],
-                "region": address["region"],
-                "sampleAddressSource": address["sampleAddressSource"],
-                "footprintStatus": address["footprintStatus"],
-                "footprintNote": address["footprintNote"],
-                "liveoakMarketSource": address["liveoakMarketSource"],
-                "providers": provider_rows,
-            }
-        )
+    providers = config["providers"]
+    provider_counter = Counter(provider["category"] for provider in providers)
+    segment_counter = Counter(provider["segment"] for provider in providers)
+    technology_counter = Counter()
+    for provider in providers:
+        for technology in provider["technologies"]:
+            technology_counter[technology] += 1
 
     generated_at = datetime.now(timezone.utc)
     return {
-        "trackerName": config["trackerName"],
+        "dashboardName": config["dashboardName"],
         "tagline": config["tagline"],
+        "heroNarrative": config["heroNarrative"],
         "generatedAt": generated_at.isoformat(),
         "generatedDateLabel": generated_at.strftime("%B %d, %Y"),
         "summary": {
-            "addressCount": len(addresses),
-            "stateCount": len({address["state"] for address in addresses}),
-            "providerCount": len(provider_catalog),
+            "providerTargetCount": config["summary"]["providerTargetCount"],
+            "geographyLevelCount": len(config["summary"]["geographyLevels"]),
+            "sourceCount": config["summary"]["sourceCount"],
+            "exportFormatCount": len(config["summary"]["exportFormats"]),
+            "geographyLevels": config["summary"]["geographyLevels"],
+            "exportFormats": config["summary"]["exportFormats"],
         },
-        "confidenceLegend": config["dataConfidenceLegend"],
-        "globalBlockers": config["globalBlockers"],
-        "addresses": addresses,
+        "statusCards": config["statusCards"],
+        "dataSources": config["dataSources"],
+        "analysisViews": config["analysisViews"],
+        "metricFamilies": config["metricFamilies"],
+        "roadmap": config["roadmap"],
+        "providerUniverse": providers,
+        "providerCategoryBreakdown": [
+            {"label": label, "count": count}
+            for label, count in sorted(provider_counter.items(), key=lambda item: (-item[1], item[0]))
+        ],
+        "providerSegmentBreakdown": [
+            {"label": label, "count": count}
+            for label, count in sorted(segment_counter.items(), key=lambda item: (-item[1], item[0]))
+        ],
+        "technologyCoverageBreakdown": [
+            {"label": label, "count": count}
+            for label, count in sorted(technology_counter.items(), key=lambda item: (-item[1], item[0]))
+        ],
+        "downloadCatalog": [
+            {
+                "id": "json",
+                "title": "Current JSON snapshot",
+                "description": "Full site payload for reuse in downstream analysis or ingestion tooling.",
+            },
+            {
+                "id": "providers_csv",
+                "title": "Provider universe CSV",
+                "description": "Top-30 watchlist with categories, technologies, and notes.",
+            },
+            {
+                "id": "metrics_csv",
+                "title": "Metric dictionary CSV",
+                "description": "Definitions for the core overlap, speed, and demographic modules.",
+            },
+            {
+                "id": "sources_csv",
+                "title": "Data sources CSV",
+                "description": "Source readiness and fields expected in the ingest pipeline.",
+            },
+            {
+                "id": "excel",
+                "title": "Excel workbook",
+                "description": "Workbook-style export containing providers, metrics, and source metadata.",
+            },
+        ],
     }
 
 
 def main() -> None:
     config = load_config()
     snapshot = build_snapshot(config)
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+    providers_csv = csv_text(
+        provider_rows(config["providers"]),
+        ["rank", "name", "segment", "category", "technologies", "focus", "notes"],
+    )
+    metrics_csv = csv_text(
+        metric_rows(config["metricFamilies"]),
+        ["metric_family", "description"],
+    )
+    sources_csv = csv_text(
+        source_rows(config["dataSources"]),
+        ["source", "status", "detail", "fields"],
+    )
+
     OUTPUT_PATH.write_text(json.dumps(snapshot, indent=2))
+    PROVIDERS_CSV_PATH.write_text(providers_csv)
+    METRICS_CSV_PATH.write_text(metrics_csv)
+    SOURCES_CSV_PATH.write_text(sources_csv)
+
     print(f"Wrote {OUTPUT_PATH}")
+    print(f"Wrote {PROVIDERS_CSV_PATH}")
+    print(f"Wrote {METRICS_CSV_PATH}")
+    print(f"Wrote {SOURCES_CSV_PATH}")
 
 
 if __name__ == "__main__":
