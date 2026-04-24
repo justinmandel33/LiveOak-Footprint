@@ -3,11 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LiveOak Fiber Footprint Tracker</title>
+    <title>Broadband Market Intelligence</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./styles.css" />
@@ -16,99 +16,233 @@
     <div class="page-shell">
       <header class="hero">
         <div class="hero-copy">
-          <p class="eyebrow">Daily market watch</p>
-          <h1 id="tracker-name">LiveOak Fiber Footprint Tracker</h1>
-          <p id="tracker-tagline" class="tagline"></p>
-          <div class="meta-row">
+          <p class="eyebrow">FCC-ready analyst workspace</p>
+          <h1 id="dashboard-name">Loading...</h1>
+          <p id="dashboard-tagline" class="tagline"></p>
+          <p id="hero-narrative" class="hero-narrative"></p>
+          <div class="hero-meta">
             <div class="meta-pill">
-              <span class="meta-label">Last snapshot</span>
+              <span class="meta-label">Snapshot date</span>
               <strong id="generated-date">Loading...</strong>
             </div>
             <div class="meta-pill">
-              <span class="meta-label">Sample addresses</span>
-              <strong id="summary-addresses">0</strong>
+              <span class="meta-label">Provider watchlist</span>
+              <strong id="summary-providers">0</strong>
             </div>
             <div class="meta-pill">
-              <span class="meta-label">States</span>
-              <strong id="summary-states">0</strong>
+              <span class="meta-label">Geography levels</span>
+              <strong id="summary-geographies">0</strong>
+            </div>
+            <div class="meta-pill">
+              <span class="meta-label">Export formats</span>
+              <strong id="summary-exports">0</strong>
             </div>
           </div>
         </div>
-        <div class="hero-panel">
-          <p class="panel-kicker">What this is doing today</p>
-          <ul class="panel-list">
-            <li>Tracks five sample addresses in LiveOak markets across Georgia and Florida.</li>
-            <li>Refreshes public plan pages daily and preserves the last known good snapshot.</li>
-            <li>Flags where exact-address FCC or checkout automation is still blocked.</li>
-          </ul>
-        </div>
+        <aside class="hero-aside">
+          <p class="panel-kicker">Immediate workflow</p>
+          <ol class="workflow-list">
+            <li>Create the FCC account and confirm the public-download/API path.</li>
+            <li>Load the first provider or state files into this schema.</li>
+            <li>Start comparing overlap, speed tiers, and demographic context.</li>
+          </ol>
+          <div class="legend">
+            <span class="legend-dot ready"></span>
+            <span>UI live now</span>
+            <span class="legend-dot pending"></span>
+            <span>Waiting on FCC setup</span>
+            <span class="legend-dot optional"></span>
+            <span>Optional enrichment</span>
+          </div>
+        </aside>
       </header>
 
-      <section class="blocker-strip">
-        <h2>Verification status</h2>
-        <div id="blocker-grid" class="blocker-grid"></div>
+      <section class="status-strip" aria-label="Build status">
+        <div id="status-grid" class="status-grid"></div>
       </section>
 
-      <section class="controls">
-        <div class="controls-copy">
-          <h2>Sample addresses</h2>
-          <p>
-            These are public-listing sample addresses in LiveOak service markets. Provider rows are
-            clearly labeled when they are still waiting on exact FCC confirmation.
+      <section class="section-header">
+        <div>
+          <p class="eyebrow">Platform Modules</p>
+          <h2>Workbook Logic, Website Form</h2>
+        </div>
+        <p class="section-copy">
+          The first version mirrors the structure in your screenshots: footprint, market size,
+          demographics, competitive intensity, overlap by tech, overlap by provider, speed mix, and
+          exports.
+        </p>
+      </section>
+
+      <section class="insight-grid">
+        <article class="surface-card chart-card">
+          <div class="card-head">
+            <div>
+              <p class="mini-label">Provider mix</p>
+              <h3>Universe by Category</h3>
+            </div>
+            <span class="chip">Watchlist</span>
+          </div>
+          <div id="category-bars" class="bar-stack"></div>
+        </article>
+
+        <article class="surface-card chart-card">
+          <div class="card-head">
+            <div>
+              <p class="mini-label">Technology lens</p>
+              <h3>Coverage Dimensions</h3>
+            </div>
+            <span class="chip">Cross-provider</span>
+          </div>
+          <div id="technology-bars" class="bar-stack"></div>
+        </article>
+
+        <article class="surface-card chart-card">
+          <div class="card-head">
+            <div>
+              <p class="mini-label">Source readiness</p>
+              <h3>Ingestion Pipeline</h3>
+            </div>
+            <span class="chip">Data stack</span>
+          </div>
+          <div id="source-list" class="source-list"></div>
+        </article>
+      </section>
+
+      <section class="section-header provider-header">
+        <div>
+          <p class="eyebrow">Provider Universe</p>
+          <h2>Top 30 Priority Companies</h2>
+        </div>
+        <div class="provider-controls">
+          <label class="search-field">
+            <span>Search</span>
+            <input id="provider-search" type="search" placeholder="Search provider, segment, or tech" />
+          </label>
+          <div id="category-filter" class="filter-row"></div>
+        </div>
+      </section>
+
+      <section class="surface-card table-card">
+        <div class="table-meta">
+          <div>
+            <p class="mini-label">Live filter</p>
+            <h3 id="provider-table-title">30 providers in scope</h3>
+          </div>
+          <p class="table-copy">
+            This list is designed as the initial analyst watchlist. We can refine the cohort after the
+            first FCC imports if you want to rebalance by passings or technology.
           </p>
         </div>
-        <div class="state-filter" id="state-filter"></div>
+        <div class="table-shell">
+          <table>
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Provider</th>
+                <th>Segment</th>
+                <th>Category</th>
+                <th>Technologies</th>
+                <th>Focus</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody id="provider-table-body"></tbody>
+          </table>
+        </div>
       </section>
 
-      <main id="address-grid" class="address-grid"></main>
+      <section class="section-header">
+        <div>
+          <p class="eyebrow">Analysis Views</p>
+          <h2>Modules Ready For Data</h2>
+        </div>
+        <p class="section-copy">
+          Each module below is wired to the site structure now, even where the underlying FCC or Census
+          loads still need to be connected.
+        </p>
+      </section>
+
+      <section id="view-grid" class="view-grid"></section>
+
+      <section class="two-up">
+        <article class="surface-card">
+          <div class="card-head">
+            <div>
+              <p class="mini-label">Metric Dictionary</p>
+              <h3>Key Table Families</h3>
+            </div>
+          </div>
+          <div id="metric-list" class="definition-list"></div>
+        </article>
+
+        <article class="surface-card">
+          <div class="card-head">
+            <div>
+              <p class="mini-label">Build Roadmap</p>
+              <h3>What Happens Next</h3>
+            </div>
+          </div>
+          <div id="roadmap-list" class="roadmap-list"></div>
+        </article>
+      </section>
+
+      <section class="section-header">
+        <div>
+          <p class="eyebrow">Download Center</p>
+          <h2>Export Current Site Data</h2>
+        </div>
+        <p class="section-copy">
+          CSV files open directly in Excel today. The workbook export packages the current watchlist and
+          metadata into a single Excel-readable file.
+        </p>
+      </section>
+
+      <section id="download-grid" class="download-grid"></section>
     </div>
 
-    <template id="blocker-template">
-      <article class="blocker-card">
-        <div class="status-dot"></div>
-        <div>
-          <h3></h3>
-          <p></p>
-        </div>
+    <template id="status-template">
+      <article class="status-card">
+        <p class="mini-label"></p>
+        <strong class="status-value"></strong>
+        <p class="status-detail"></p>
       </article>
     </template>
 
-    <template id="address-template">
-      <article class="address-card">
-        <div class="address-head">
+    <template id="bar-template">
+      <div class="bar-row">
+        <div class="bar-copy">
+          <span class="bar-label"></span>
+          <strong class="bar-value"></strong>
+        </div>
+        <div class="bar-track">
+          <span class="bar-fill"></span>
+        </div>
+      </div>
+    </template>
+
+    <template id="view-template">
+      <article class="view-card">
+        <div class="card-head">
           <div>
-            <p class="address-region"></p>
-            <h3 class="address-title"></h3>
-            <p class="address-subtitle"></p>
+            <p class="mini-label">Analysis module</p>
+            <h3 class="view-name"></h3>
           </div>
           <span class="status-badge"></span>
         </div>
-
-        <div class="market-source">
-          <span>LiveOak market source</span>
-          <a target="_blank" rel="noreferrer">Open source</a>
-        </div>
-
-        <p class="address-note"></p>
-
-        <div class="provider-list"></div>
+        <p class="view-description"></p>
+        <ul class="pill-list"></ul>
       </article>
     </template>
 
-    <template id="provider-template">
-      <section class="provider-card">
-        <div class="provider-head">
-          <div>
-            <h4 class="provider-name"></h4>
-            <p class="provider-meta"></p>
-          </div>
-          <span class="refresh-pill"></span>
+    <template id="download-template">
+      <article class="download-card surface-card">
+        <div>
+          <p class="mini-label">Export</p>
+          <h3 class="download-title"></h3>
+          <p class="download-description"></p>
         </div>
-        <p class="provider-availability"></p>
-        <ul class="offer-list"></ul>
-        <p class="provider-source"></p>
-        <p class="provider-note"></p>
-      </section>
+        <button type="button" class="download-button">Download</button>
+      </article>
     </template>
 
     <script src="./app.js" type="module"></script>
