@@ -1,189 +1,565 @@
 {
-  "trackerName": "LiveOak Fiber Footprint Tracker",
-  "tagline": "Daily public-price snapshots for five sample addresses in LiveOak markets, with FCC exact-address verification wired as the next upgrade.",
-  "dataConfidenceLegend": {
-    "verified_public_page": "Pulled from a public pricing or coverage page.",
-    "provisional_market_level": "Inferred from city or market coverage, not yet confirmed on the exact FCC address record.",
-    "blocked_exact_address": "Needs an authenticated FCC lookup or a provider checkout flow that will allow automation."
+  "dashboardName": "Broadband Market Intelligence",
+  "tagline": "An FCC-ready analyst workspace for provider footprints, competitive overlap, speed tiers, and demographic benchmarking across the top U.S. fixed-broadband players.",
+  "heroNarrative": "This first build sets up the provider universe, module structure, download center, and FCC/Census data model so the site can move quickly from watchlist mode into live availability analysis once your FCC account and source files are ready.",
+  "summary": {
+    "providerTargetCount": 30,
+    "geographyLevels": [
+      "State",
+      "County",
+      "Census tract",
+      "FCC fabric location"
+    ],
+    "sourceCount": 4,
+    "exportFormats": [
+      "JSON snapshot",
+      "CSV extracts",
+      "Excel workbook"
+    ]
   },
-  "globalBlockers": [
+  "statusCards": [
     {
-      "id": "fcc_exact_address",
-      "title": "FCC exact-address provider lookups are not automated yet",
-      "status": "blocked",
-      "detail": "The FCC Broadband Map APIs that expose structured provider data require authentication, and the public site does not expose a clean anonymous endpoint from this environment."
+      "label": "Build Stage",
+      "value": "Scaffold live",
+      "detail": "UI, exports, and metric taxonomy are in place."
     },
     {
-      "id": "provider_checkout",
-      "title": "Some provider checkout flows are protected",
-      "status": "blocked",
-      "detail": "LiveOak's order page is behind Cloudflare in this environment, so exact address pricing needs browser automation in GitHub Actions or a manual session."
+      "label": "FCC Access",
+      "value": "In progress",
+      "detail": "Public downloads can load first; API/Fabric enrichments can follow."
+    },
+    {
+      "label": "Granularity Path",
+      "value": "State to location",
+      "detail": "The schema is staged for state, county, tract, and location-level joins."
+    },
+    {
+      "label": "Exports",
+      "value": "Ready",
+      "detail": "Current watchlist and metadata can already be downloaded to Excel-compatible files."
     }
   ],
-  "addresses": [
+  "dataSources": [
     {
-      "id": "ga-brunswick-timber-ridge",
-      "street": "113 Timber Ridge Dr",
-      "city": "Brunswick",
-      "state": "GA",
-      "zip": "31525",
-      "region": "Georgia",
-      "sampleAddressSource": "Public listing search result",
-      "footprintStatus": "provisional_market_level",
-      "footprintNote": "Chosen as a sample address inside a LiveOak service city. Exact address verification on the FCC record is still pending.",
-      "liveoakMarketSource": {
-        "label": "LiveOak Fiber Brunswick market page",
-        "url": "https://liveoakfiber.com/brunswick-ga-internet-provider/"
-      },
-      "providers": ["liveoak", "xfinity", "tmobile-home", "starlink"]
+      "name": "FCC BDC availability downloads",
+      "status": "ready_now",
+      "detail": "Primary source for provider, technology, speed, and residential/business availability records.",
+      "fields": [
+        "provider",
+        "technology",
+        "max download",
+        "max upload",
+        "latency flag",
+        "business/residential"
+      ]
     },
     {
-      "id": "ga-savannah-bacon-park",
-      "street": "1211 Bacon Park Dr",
-      "city": "Savannah",
-      "state": "GA",
-      "zip": "31406",
-      "region": "Georgia",
-      "sampleAddressSource": "Public listing search result",
-      "footprintStatus": "provisional_market_level",
-      "footprintNote": "Chosen as a sample address in Bacon Park, which LiveOak publicly identified as part of its Savannah expansion area.",
-      "liveoakMarketSource": {
-        "label": "Savannah expansion news",
-        "url": "https://liveoakfiber.com/liveoak-fiber-expands-high-speed-fiber-network-in-savannah-georgia/"
-      },
-      "providers": ["liveoak", "xfinity", "tmobile-home", "starlink"]
+      "name": "FCC Broadband Map API / authenticated public data access",
+      "status": "pending_account",
+      "detail": "Account-backed access path for more programmatic pulls once your FCC credentials are set up.",
+      "fields": [
+        "map metadata",
+        "location lookups",
+        "download automation"
+      ]
     },
     {
-      "id": "ga-stsimons-shore-edge",
-      "street": "601 Shore Edge Trce",
-      "city": "St. Simons Island",
-      "state": "GA",
-      "zip": "31522",
-      "region": "Georgia",
-      "sampleAddressSource": "Public listing search result",
-      "footprintStatus": "provisional_market_level",
-      "footprintNote": "Chosen as a sample address inside the Golden Isles market LiveOak publicly serves. Exact FCC-location confirmation is still pending.",
-      "liveoakMarketSource": {
-        "label": "LiveOak Fiber St. Simons Island page",
-        "url": "https://liveoakfiber.com/st-simons-island-ga-internet-provider/"
-      },
-      "providers": ["liveoak", "xfinity", "tmobile-home", "starlink"]
+      "name": "FCC Fabric / CostQuest location enrichment",
+      "status": "optional_license",
+      "detail": "Needed for the most granular serviceable-location workflows and exact address joins.",
+      "fields": [
+        "location id",
+        "serviceable location geometry",
+        "address-level matching"
+      ]
     },
     {
-      "id": "fl-niceville-crestone",
-      "street": "1706 Crestone Cv",
-      "city": "Niceville",
-      "state": "FL",
-      "zip": "32578",
-      "region": "Florida",
-      "sampleAddressSource": "Public listing search result",
-      "footprintStatus": "provisional_market_level",
-      "footprintNote": "Chosen as a sample address in a LiveOak Emerald Coast city. Exact FCC-location confirmation is still pending.",
-      "liveoakMarketSource": {
-        "label": "LiveOak Fiber Niceville page",
-        "url": "https://liveoakfiber.com/niceville-fl-internet-provider/"
-      },
-      "providers": ["liveoak", "cox", "tmobile-home", "starlink"]
-    },
-    {
-      "id": "fl-fortwalton-cambridge",
-      "street": "613 Cambridge Ave",
-      "city": "Fort Walton Beach",
-      "state": "FL",
-      "zip": "32547",
-      "region": "Florida",
-      "sampleAddressSource": "Public listing search result",
-      "footprintStatus": "provisional_market_level",
-      "footprintNote": "Chosen as a sample address inside another LiveOak Emerald Coast city. Exact FCC-location confirmation is still pending.",
-      "liveoakMarketSource": {
-        "label": "LiveOak Fiber Fort Walton Beach page",
-        "url": "https://liveoakfiber.com/fort-walton-beach-fl-internet-provider/"
-      },
-      "providers": ["liveoak", "cox", "tmobile-home", "starlink"]
+      "name": "Census / ACS / TIGER enrichments",
+      "status": "planned_next",
+      "detail": "Required to reproduce the demographic, housing, business, density, and morphology views in your screenshots.",
+      "fields": [
+        "population",
+        "housing units",
+        "businesses",
+        "density",
+        "tract/county joins"
+      ]
     }
   ],
-  "providers": {
-    "liveoak": {
-      "name": "LiveOak Fiber",
-      "technology": "FTTH",
-      "confidence": "verified_public_page",
-      "priceUrl": "https://liveoakfiber.com/residential-offer/",
-      "priceSourceLabel": "LiveOak public residential offer page",
-      "notes": [
-        "LiveOak publishes pricing publicly, but exact address availability still needs the FCC location lookup or the order flow.",
-        "Some market landing pages advertise different tier mixes, so exact address results matter."
-      ],
-      "fallbackOffers": [
-        {"tier": "500 Mbps", "price": "$59/mo"},
-        {"tier": "1 Gbps", "price": "$89/mo"},
-        {"tier": "3 Gbps", "price": "$109/mo"},
-        {"tier": "5 Gbps", "price": "$139/mo"}
+  "analysisViews": [
+    {
+      "name": "Provider Footprint",
+      "status": "ui_ready",
+      "description": "Core footprint tables by geography, technology, and speed tier.",
+      "outputs": [
+        "provider by state",
+        "provider by county",
+        "provider by tract",
+        "provider by location"
       ]
     },
-    "xfinity": {
-      "name": "Xfinity",
-      "technology": "Cable",
-      "confidence": "verified_public_page",
-      "priceUrl": "https://www.xfinity.com/learn/internet-service",
-      "priceSourceLabel": "Xfinity public internet plans page",
-      "notes": [
-        "Seeded from Xfinity's published online pricing, not an exact-address cart result.",
-        "Georgia sample addresses use Xfinity as the provisional cable competitor until FCC exact-address records are connected."
-      ],
-      "fallbackOffers": [
-        {"tier": "300 Mbps", "price": "$45/mo"},
-        {"tier": "500 Mbps", "price": "$60/mo"},
-        {"tier": "1 Gig", "price": "$70/mo"},
-        {"tier": "2 Gbps", "price": "$100/mo"}
+    {
+      "name": "Market Size",
+      "status": "ui_ready",
+      "description": "Market-sizing tables for population, housing units, businesses, and passings.",
+      "outputs": [
+        "state market size",
+        "county market size",
+        "tract coverage"
       ]
     },
-    "cox": {
+    {
+      "name": "Demographics",
+      "status": "needs_census_enrichment",
+      "description": "Population growth, housing, density, and morphology benchmarks layered onto the footprint.",
+      "outputs": [
+        "state benchmarks",
+        "county benchmarks",
+        "morphology cuts"
+      ]
+    },
+    {
+      "name": "Competitive Intensity",
+      "status": "fcc_data_ready",
+      "description": "Counts of locations with zero, one, two, three, four, or five-plus competitors.",
+      "outputs": [
+        "competitive scenario units",
+        "competitive scenario percentages",
+        "average competitors per location"
+      ]
+    },
+    {
+      "name": "Overlap by Technology",
+      "status": "fcc_data_ready",
+      "description": "Wired-only and wired-plus-FWA overlap by copper, cable, fiber, FWA, and none.",
+      "outputs": [
+        "units by technology overlap",
+        "percent by technology overlap",
+        "unique footprint"
+      ]
+    },
+    {
+      "name": "Overlap by Provider",
+      "status": "fcc_data_ready",
+      "description": "Top competitor tables split by all-tech, ILEC, MSO, fiber overbuilder, and FWA cohorts.",
+      "outputs": [
+        "top competitors",
+        "overlap units",
+        "overlap percent"
+      ]
+    },
+    {
+      "name": "Speed Mix",
+      "status": "fcc_data_ready",
+      "description": "Availability bands ranging from sub-25/3 to gig-plus categories.",
+      "outputs": [
+        "speed-tier units",
+        "speed-tier percentages",
+        "ranked state views"
+      ]
+    },
+    {
+      "name": "Download Center",
+      "status": "live_now",
+      "description": "Direct export of watchlists, metric dictionaries, generated snapshots, and Excel workbooks.",
+      "outputs": [
+        "json",
+        "csv",
+        "excel workbook"
+      ]
+    }
+  ],
+  "metricFamilies": [
+    {
+      "name": "Technology overlap",
+      "description": "Fiber only, cable only, cable plus fiber, copper only, copper plus fiber, copper plus cable, copper plus cable plus fiber, FWA, FWA overlap, and locations with no qualifying competitor."
+    },
+    {
+      "name": "Competitive scenario",
+      "description": "Zero competitors, one competitor, two competitors, three competitors, four competitors, and five competitors or more."
+    },
+    {
+      "name": "Speed tiers",
+      "description": "Below 25/3, 25/3 to below 100/20, 100/20 to below 250/25, 250/25 to below 500/50, 500/50 to below 900/90, and 900/90 plus."
+    },
+    {
+      "name": "Demographics",
+      "description": "Population, growth rate, housing units, businesses, state area, road miles, household density, and morphology."
+    }
+  ],
+  "roadmap": [
+    {
+      "title": "Load the first FCC public availability files",
+      "status": "next",
+      "detail": "Once your account is created, we can import the first provider/state download set and replace placeholder readiness cards with live tables."
+    },
+    {
+      "title": "Normalize provider naming and categories",
+      "status": "next",
+      "detail": "We will map FCC legal-entity names into analyst-friendly parent brands and competitor cohorts."
+    },
+    {
+      "title": "Join Census enrichments",
+      "status": "queued",
+      "detail": "This will unlock the market-size and demographic sheets that mirror your workbook examples."
+    },
+    {
+      "title": "Add licensed Fabric support if available",
+      "status": "optional",
+      "detail": "Only needed if you want repeatable exact-address or serviceable-location workflows at full granularity."
+    }
+  ],
+  "providers": [
+    {
+      "rank": 1,
+      "name": "AT&T",
+      "segment": "ILEC / Telco",
+      "category": "Core wireline",
+      "technologies": [
+        "Fiber",
+        "Copper"
+      ],
+      "focus": "National",
+      "notes": "Core incumbent footprint with both copper legacy and fiber build relevance."
+    },
+    {
+      "rank": 2,
+      "name": "Verizon",
+      "segment": "ILEC / Telco",
+      "category": "Core wireline",
+      "technologies": [
+        "Fiber",
+        "FWA"
+      ],
+      "focus": "National",
+      "notes": "Important for FiOS footprint and fixed-wireless overlap analysis."
+    },
+    {
+      "rank": 3,
+      "name": "Comcast Xfinity",
+      "segment": "MSO",
+      "category": "Core wireline",
+      "technologies": [
+        "Cable"
+      ],
+      "focus": "National",
+      "notes": "Largest cable benchmark for overlap and speed-tier comparisons."
+    },
+    {
+      "rank": 4,
+      "name": "Charter Spectrum",
+      "segment": "MSO",
+      "category": "Core wireline",
+      "technologies": [
+        "Cable"
+      ],
+      "focus": "National",
+      "notes": "Critical MSO competitor across a wide state and county footprint."
+    },
+    {
+      "rank": 5,
       "name": "Cox",
-      "technology": "Cable",
-      "confidence": "verified_public_page",
-      "priceUrl": "https://www.cox.com/residential-shop/internet-configuration.html",
-      "priceSourceLabel": "Cox public internet configuration page",
-      "notes": [
-        "Seeded from published plan pricing, not an exact-address checkout result.",
-        "Florida sample addresses use Cox as the provisional cable competitor until FCC exact-address records are connected."
+      "segment": "MSO",
+      "category": "Core wireline",
+      "technologies": [
+        "Cable",
+        "Fiber"
       ],
-      "fallbackOffers": [
-        {"tier": "300 Mbps", "price": "$55/mo"},
-        {"tier": "500 Mbps", "price": "$75/mo"},
-        {"tier": "1 GIG", "price": "$90/mo"},
-        {"tier": "2 GIG", "price": "$110/mo"}
-      ]
+      "focus": "Regional",
+      "notes": "Meaningful in Southeast and Southwest market studies."
     },
-    "tmobile-home": {
+    {
+      "rank": 6,
+      "name": "Altice USA / Optimum",
+      "segment": "MSO",
+      "category": "Core wireline",
+      "technologies": [
+        "Cable",
+        "Fiber"
+      ],
+      "focus": "Regional",
+      "notes": "Needed for Northeast and select Southern overlap work."
+    },
+    {
+      "rank": 7,
+      "name": "Cable One / Sparklight",
+      "segment": "MSO",
+      "category": "Core wireline",
+      "technologies": [
+        "Cable",
+        "Fiber"
+      ],
+      "focus": "Regional",
+      "notes": "Matches the benchmark-style workbook views in your screenshots."
+    },
+    {
+      "rank": 8,
+      "name": "Breezeline",
+      "segment": "MSO",
+      "category": "Core wireline",
+      "technologies": [
+        "Cable",
+        "Fiber"
+      ],
+      "focus": "Regional",
+      "notes": "Relevant for East Coast and former WOW market comparisons."
+    },
+    {
+      "rank": 9,
+      "name": "Astound Broadband",
+      "segment": "MSO / Overbuilder",
+      "category": "Core wireline",
+      "technologies": [
+        "Cable",
+        "Fiber"
+      ],
+      "focus": "Regional",
+      "notes": "Important consolidated brand across several metro systems."
+    },
+    {
+      "rank": 10,
+      "name": "Brightspeed",
+      "segment": "ILEC / Telco",
+      "category": "Core wireline",
+      "technologies": [
+        "Fiber",
+        "Copper"
+      ],
+      "focus": "Regional",
+      "notes": "Key post-Lumen incumbent footprint to track separately."
+    },
+    {
+      "rank": 11,
+      "name": "Frontier",
+      "segment": "ILEC / Telco",
+      "category": "Core wireline",
+      "technologies": [
+        "Fiber",
+        "Copper"
+      ],
+      "focus": "National",
+      "notes": "Major rural and suburban telco competitor with active fiber builds."
+    },
+    {
+      "rank": 12,
+      "name": "Lumen / Quantum Fiber",
+      "segment": "ILEC / Telco",
+      "category": "Core wireline",
+      "technologies": [
+        "Fiber",
+        "Copper"
+      ],
+      "focus": "National",
+      "notes": "Needs parent-brand mapping because FCC entities may not align with retail branding."
+    },
+    {
+      "rank": 13,
+      "name": "Windstream / Kinetic",
+      "segment": "ILEC / Telco",
+      "category": "Core wireline",
+      "technologies": [
+        "Fiber",
+        "Copper"
+      ],
+      "focus": "Regional",
+      "notes": "Useful in rural competitive-intensity and copper transition analysis."
+    },
+    {
+      "rank": 14,
+      "name": "Consolidated Communications",
+      "segment": "ILEC / Telco",
+      "category": "Core wireline",
+      "technologies": [
+        "Fiber",
+        "Copper"
+      ],
+      "focus": "Regional",
+      "notes": "Include alongside Fidium branding once naming normalization is in place."
+    },
+    {
+      "rank": 15,
+      "name": "altafiber / Cincinnati Bell",
+      "segment": "ILEC / Telco",
+      "category": "Core wireline",
+      "technologies": [
+        "Fiber",
+        "Copper"
+      ],
+      "focus": "Regional",
+      "notes": "Explicitly included per your request."
+    },
+    {
+      "rank": 16,
+      "name": "Metronet",
+      "segment": "Fiber overbuilder",
+      "category": "Expansion watch",
+      "technologies": [
+        "Fiber"
+      ],
+      "focus": "Regional",
+      "notes": "Important overbuilder for fair-share and penetration studies."
+    },
+    {
+      "rank": 17,
+      "name": "Mediacom",
+      "segment": "MSO",
+      "category": "Expansion watch",
+      "technologies": [
+        "Cable"
+      ],
+      "focus": "Regional",
+      "notes": "Needed for Midwest and smaller-market cable benchmarking."
+    },
+    {
+      "rank": 18,
+      "name": "TDS Telecom",
+      "segment": "ILEC / Telco",
+      "category": "Expansion watch",
+      "technologies": [
+        "Fiber",
+        "Copper"
+      ],
+      "focus": "Regional",
+      "notes": "Useful in state-by-state rural footprint work."
+    },
+    {
+      "rank": 19,
+      "name": "Midco",
+      "segment": "MSO",
+      "category": "Expansion watch",
+      "technologies": [
+        "Cable",
+        "Fiber"
+      ],
+      "focus": "Regional",
+      "notes": "Meaningful for Dakotas and upper Midwest competitive context."
+    },
+    {
+      "rank": 20,
+      "name": "WideOpenWest (WOW!)",
+      "segment": "MSO",
+      "category": "Expansion watch",
+      "technologies": [
+        "Cable",
+        "Fiber"
+      ],
+      "focus": "Regional",
+      "notes": "Smaller but still relevant in selected overlap markets."
+    },
+    {
+      "rank": 21,
+      "name": "Ziply Fiber",
+      "segment": "Fiber overbuilder / Telco",
+      "category": "Expansion watch",
+      "technologies": [
+        "Fiber",
+        "Copper"
+      ],
+      "focus": "Regional",
+      "notes": "Pacific Northwest focus with active fiber upgrade story."
+    },
+    {
+      "rank": 22,
+      "name": "Hawaiian Telcom",
+      "segment": "ILEC / Telco",
+      "category": "Expansion watch",
+      "technologies": [
+        "Fiber",
+        "Copper"
+      ],
+      "focus": "Regional",
+      "notes": "Important for island-specific market and grant analysis."
+    },
+    {
+      "rank": 23,
+      "name": "Google Fiber",
+      "segment": "Fiber overbuilder",
+      "category": "Expansion watch",
+      "technologies": [
+        "Fiber"
+      ],
+      "focus": "Metro selective",
+      "notes": "High-visibility urban benchmark even with selective footprint."
+    },
+    {
+      "rank": 24,
+      "name": "Armstrong",
+      "segment": "MSO",
+      "category": "Selective regional",
+      "technologies": [
+        "Cable",
+        "Fiber"
+      ],
+      "focus": "Regional",
+      "notes": "Useful for smaller-market cable and hybrid footprint comparisons."
+    },
+    {
+      "rank": 25,
+      "name": "GVTC",
+      "segment": "ILEC / Fiber",
+      "category": "Selective regional",
+      "technologies": [
+        "Fiber",
+        "Copper"
+      ],
+      "focus": "Regional",
+      "notes": "A good example of a dense regional operator with overbuild relevance."
+    },
+    {
+      "rank": 26,
+      "name": "GoNetspeed",
+      "segment": "Fiber overbuilder",
+      "category": "Selective regional",
+      "technologies": [
+        "Fiber"
+      ],
+      "focus": "Regional",
+      "notes": "Represents newer fiber overbuilder expansion patterns."
+    },
+    {
+      "rank": 27,
+      "name": "Point Broadband",
+      "segment": "Fiber overbuilder",
+      "category": "Selective regional",
+      "technologies": [
+        "Fiber"
+      ],
+      "focus": "Regional",
+      "notes": "Useful in Southeast and smaller-market fiber studies."
+    },
+    {
+      "rank": 28,
+      "name": "Ritter Communications",
+      "segment": "Fiber overbuilder / Telco",
+      "category": "Selective regional",
+      "technologies": [
+        "Fiber",
+        "Copper"
+      ],
+      "focus": "Regional",
+      "notes": "Good fit for enterprise-heavy and rural Southern footprints."
+    },
+    {
+      "rank": 29,
       "name": "T-Mobile Home Internet",
-      "technology": "FWA",
-      "confidence": "verified_public_page",
-      "priceUrl": "https://www.t-mobile.com/home-internet/plans",
-      "priceSourceLabel": "T-Mobile Home Internet plans page",
-      "notes": [
-        "T-Mobile publishes plan pricing publicly, but availability and speeds can vary by exact address.",
-        "The address-level offer needs a live availability check to move from provisional to exact."
+      "segment": "FWA",
+      "category": "Wireless overlay",
+      "technologies": [
+        "FWA"
       ],
-      "fallbackOffers": [
-        {"tier": "Rely", "price": "$50/mo"},
-        {"tier": "Amplified", "price": "$60/mo"},
-        {"tier": "All-In", "price": "$70/mo"}
-      ]
+      "focus": "National",
+      "notes": "Included because FWA overlap shows up throughout your workbook examples."
     },
-    "starlink": {
+    {
+      "rank": 30,
       "name": "Starlink",
-      "technology": "Satellite",
-      "confidence": "verified_public_page",
-      "priceUrl": "https://www.starlink.com/residential",
-      "priceSourceLabel": "Starlink Residential page",
-      "notes": [
-        "Only Starlink is tracked on the satellite side, per scope.",
-        "Starlink runs address-sensitive promos in some areas, so the exact address result may differ from the public baseline."
+      "segment": "Satellite",
+      "category": "Wireless overlay",
+      "technologies": [
+        "Satellite"
       ],
-      "fallbackOffers": [
-        {"tier": "Residential Lite", "price": "$80/mo"},
-        {"tier": "Residential", "price": "$120/mo"}
-      ]
+      "focus": "National",
+      "notes": "Useful as a fallback competitor layer, especially in sparse geographies."
     }
-  }
+  ]
 }
