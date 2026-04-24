@@ -1,7 +1,16 @@
-name: Deploy LiveOak Fiber Tracker
+name: Deploy Broadband Market Intelligence
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - site/**
+      - scripts/**
+      - config/**
+      - README.md
+      - .github/workflows/deploy-fiber-tracker.yml
   schedule:
     - cron: "17 11 * * *"
 
@@ -11,7 +20,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: fiber-tracker-pages
+  group: broadband-market-intelligence-pages
   cancel-in-progress: true
 
 jobs:
@@ -26,7 +35,7 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Build tracker snapshot
+      - name: Build dashboard snapshot
         run: python3 scripts/build_snapshot.py
 
       - name: Upload Pages artifact
